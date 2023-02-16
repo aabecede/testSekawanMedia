@@ -15,5 +15,4 @@ class MasterRegion extends Model
 
     protected $table = 'master_region';
     protected $guarded = ['id'];
-
 }

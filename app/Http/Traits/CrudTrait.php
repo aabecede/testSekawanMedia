@@ -20,5 +20,9 @@ trait CrudTrait
         self::deleting(function($model){
             $model->deleted_by = auth()->id() ?? null;
         });
+
+        self::deleted(function($model){
+            $model->deleted_by = auth()->id() ?? null;
+        });
     }
 }

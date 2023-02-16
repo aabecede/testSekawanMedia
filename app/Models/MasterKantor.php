@@ -15,4 +15,12 @@ class MasterKantor extends Model
 
     protected $table = 'master_kantor';
     protected $guarded = ['id'];
+    /**ENUM DB */
+    static public $tipeKantor = [
+        'UTAMA','CABANG'
+    ];
+
+    public function master_region(){
+        return $this->hasOne(MasterRegion::class, 'id', 'region_id');
+    }
 }
