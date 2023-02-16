@@ -1,7 +1,7 @@
 @extends('baseLayout.index')
 @section('content')
     @php
-        $arr_select_data = explode(',', $selected_data);
+        $arr_select_data = explode(',', $selected_data) ?? [];
     @endphp
     <section class="content">
         <div class="container-fluid">
@@ -54,7 +54,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="{{count()}}">No Data</td>
+                                            <td colspan="{{count($arr_select_data) + 1}}" class="text-center">No Data</td>
                                         </tr>
                                     @endforelse
                                     </tbody>

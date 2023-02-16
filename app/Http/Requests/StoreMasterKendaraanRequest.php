@@ -35,20 +35,38 @@ class StoreMasterKendaraanRequest extends FormRequest
             'jenis_kendaraan' => [
                 'required'
             ],
+            'tanggal_beli_sewa_at' => [
+                'required',
+                'date '
+            ],
+
+            'nama' => [
+                'required',
+            ],
+            'max_tangki' => [
+                'required',
+                'numeric',
+                'gt:0'
+            ],
+            'current_km' => [
+                'required',
+                'numeric',
+                'gt:0'
+            ],
+            'status' => [
+                'required',
+                Rule::in([-1, 1])
+            ]
         ];
         $request = request();
         if(strtoupper($request->status_kendaraan) == 'SEWA'){
             $rules['agen_sewa'] = [
                 'required'
             ];
-            $rules['tanggal_sewa_start_at'] = [
-                'required',
-                'date'
-            ];
-            $rules['tanggal_sewa_end_at'] = [
+            $rules['tanggal_jual_sewa_at'] = [
                 'required',
                 'date',
-                'after:tanggal_sewa_start_at'
+                'after:tanggal_beli_sewa_at'
             ];
         }
         return $rules;

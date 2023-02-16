@@ -19,6 +19,10 @@ class MasterKendaraan extends Model
         'PRIBADI',
         'SEWA'
     ];
+    static $status = [
+        '1' => 'Aktif',
+        '-1' => 'In Aktif'
+    ];
 
     public function scopeGroupBytipe($query, String $tipe){
         // $query->groupBy('jenis_kendaraan') #contohnya macam ni
@@ -27,5 +31,9 @@ class MasterKendaraan extends Model
         ->selectRaw($tipe);
 
         return $query;
+    }
+
+    public function getAttrStatusAttribute(){
+        return self::$status[$this->status];
     }
 }

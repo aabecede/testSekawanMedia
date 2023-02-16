@@ -20,7 +20,7 @@ class RegionController extends Controller
     public function index()
     {
         $selected_data = $this->select;
-        $data = (new RegionRead())->paginateMasterRegion($paginate = 2, $selected_data);
+        $data = (new RegionRead())->paginateMasterRegion($paginate = 20, $selected_data);
         return view('admin.master-data.master-region.index',compact(
             'selected_data',
             'data'

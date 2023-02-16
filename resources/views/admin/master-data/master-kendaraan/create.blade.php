@@ -40,6 +40,40 @@
                                             @endif
                                             <div class="card-body">
                                                 <div class="form-group">
+                                                    <label for="title">Nama</label>
+                                                    <input type="text" class="form-control" name="nama" value="{{ $data->nama ?? old('nama') ?? null }}" required>
+                                                    @if (session('validator')['nama'] ?? null)
+                                                        <div class="invalid-feedback" style="display: inline;">
+                                                            @foreach (session('validator')['nama'] as $item)
+                                                                {{ $item }} <br>
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="title">Max Tangki</label>
+                                                    <input type="text" inputmode="numeric" pattern="[-+]?[0-9]*[.,]?[0-9]+" class="form-control" name="max_tangki" value="{{ $data->max_tangki ?? old('max_tangki') ?? null }}" required>
+                                                    @if (session('validator')['max_tangki'] ?? null)
+                                                        <div class="invalid-feedback" style="display: inline;">
+                                                            @foreach (session('validator')['max_tangki'] as $item)
+                                                                {{ $item }} <br>
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="title">Current KM</label>
+                                                    <input type="text" inputmode="numeric" pattern="[-+]?[0-9]*[.,]?[0-9]+" class="form-control" name="current_km" value="{{ $data->current_km ?? old('current_km') ?? null }}" required>
+                                                    @if (session('validator')['current_km'] ?? null)
+                                                        <div class="invalid-feedback" style="display: inline;">
+                                                            @foreach (session('validator')['current_km'] as $item)
+                                                                {{ $item }} <br>
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                <div class="form-group">
                                                     <label for="title">Status Kendaraan</label>
                                                     <select class="js-select2" name="status_kendaraan" required>
                                                         @foreach ($status_kendaraan as $item)
@@ -88,7 +122,7 @@
 
                                                 <div class="form-group form-sewa">
                                                     <label for="title">Agen Sewa</label>
-                                                    <select class="js-select2-tags" name="agen_sewa" required>
+                                                    <select class="js-select2-tags" name="agen_sewa">
                                                         @if(!empty(old('agen_sewa')))
                                                             <option value="{{old('agen_sewa')}}" selected>{{old('agen_sewa')}}</option>
                                                         @endif
@@ -112,27 +146,55 @@
                                                 </div>
 
                                                 <div class="form-group form-sewa">
-                                                    <label for="title">Tanggal Sewa Start</label>
-                                                    <input type="date" class="form-control" id="tanggal_sewa_start_at" name="tanggal_sewa_start_at" value="{{ \Carbon\Carbon::parse($data->tanggal_sewa_start_at ?? now())->format('Y-m-d') ?? null ?? old('tanggal_sewa_start_at') }}">
-                                                    @if (session('validator')['tanggal_sewa_start_at'] ?? null)
+                                                    <label for="title">Tanggal Beli / Sewa Start</label>
+                                                    <input type="datetime-local" class="form-control" id="tanggal_beli_sewa_at" name="tanggal_beli_sewa_at" value="{{ \Carbon\Carbon::parse($data->tanggal_beli_sewa_at ?? now()) ?? null ?? old('tanggal_beli_sewa_at') }}">
+                                                    @if (session('validator')['tanggal_beli_sewa_at'] ?? null)
                                                         <div class="invalid-feedback" style="display: inline;">
-                                                            @foreach (session('validator')['tanggal_sewa_start_at'] as $item)
+                                                            @foreach (session('validator')['tanggal_beli_sewa_at'] as $item)
                                                                 {{ $item }} <br>
                                                             @endforeach
                                                         </div>
                                                     @endif
                                                 </div>
                                                 <div class="form-group form-sewa">
-                                                    <label for="title">Tanggal Sewa End</label>
-                                                    <input type="date" class="form-control" id="tanggal_sewa_end_at" name="tanggal_sewa_end_at" value="{{ \Carbon\Carbon::parse($data->tanggal_sewa_end_at ?? now())->format('Y-m-d') ?? null ?? old('tanggal_sewa_end_at') }}">
-                                                    @if (session('validator')['tanggal_sewa_end_at'] ?? null)
+                                                    <label for="title">Tanggal Beli / Sewa End</label>
+                                                    <input type="datetime-local" class="form-control" id="tanggal_jual_sewa_at" name="tanggal_jual_sewa_at" value="{{ \Carbon\Carbon::parse($data->tanggal_jual_sewa_at ?? now()) ?? null ?? old('tanggal_jual_sewa_at') }}">
+                                                    @if (session('validator')['tanggal_jual_sewa_at'] ?? null)
                                                         <div class="invalid-feedback" style="display: inline;">
-                                                            @foreach (session('validator')['tanggal_sewa_end_at'] as $item)
+                                                            @foreach (session('validator')['tanggal_jual_sewa_at'] as $item)
                                                                 {{ $item }} <br>
                                                             @endforeach
                                                         </div>
                                                     @endif
                                                 </div>
+
+                                                @if(!empty($data))
+                                                    <div class="form-group form-sewa">
+                                                        <label for="title">Status</label>
+                                                        <select class="js-select2-tags" name="status">
+                                                            @if(!empty(old('status')))
+                                                                <option value="{{old('status')}}" selected>{{old('status')}}</option>
+                                                            @endif
+                                                            @foreach ($status as $key => $item)
+                                                                @php
+                                                                    $selected = '';
+                                                                    if($key == ($data->status ?? null)){
+                                                                        $selected = 'selected';
+                                                                    }
+                                                                @endphp
+                                                                <option value="{{ $key }}" {{ $selected }} > {{$item}} </option>
+                                                            @endforeach
+                                                        </select>
+                                                        @if (session('validator')['status'] ?? null)
+                                                            <div class="invalid-feedback" style="display: inline;">
+                                                                @foreach (session('validator')['status'] as $item)
+                                                                    {{ $item }} <br>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endif
+
                                             </div>
                                             <!-- /.card-body -->
 
@@ -155,17 +217,3 @@
         <!-- /.container-fluid -->
     </section>
 @endsection
-@push('js')
-    <script>
-        $(document).on('change', '[name="status_kendaraan"]', function(){
-            let vall = $(this).val()
-            if(vall == 'PRIBADI'){
-                $('.form-sewa').hide();
-            }
-            else{
-                $('.form-sewa').show();
-            }
-        });
-        $('[name="status_kendaraan"]').val(`{{ $data->status_kendaraan ?? 'SEWA' }}`).trigger('change')
-    </script>
-@endpush

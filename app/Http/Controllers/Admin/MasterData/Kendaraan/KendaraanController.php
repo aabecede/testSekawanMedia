@@ -15,14 +15,14 @@ class KendaraanController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    protected $select = 'uuid,jenis_kendaraan,status_kendaraan,agen_sewa,tanggal_sewa_start_at,tanggal_sewa_end_at'; #untuk selectnya
+    protected $select = 'uuid,jenis_kendaraan,status_kendaraan,agen_sewa,tanggal_beli_sewa_at,tanggal_jual_sewa_at,status,max_tangki,current_km,nama'; #untuk selectnya
     protected $base_url = 'admin/master-data/kendaraan'; #base url routenya
     public function index()
     {
         $base_url = $this->base_url;
         $selected_data = $this->select;
         $data = (new KendaraanRead())->paginateMasterKendaraan(10, $selected_data);
-        return view('admin.components.base-crud.index', compact(
+        return view('admin.master-data.master-kendaraan.index', compact(
             'base_url',
             'data',
             'selected_data'
@@ -59,14 +59,18 @@ class KendaraanController extends Controller
     {
         DB::beginTransaction();
         try {
+
             $data = [
                 'status_kendaraan' => $request->status_kendaraan,
-                'jenis_kendaraan' => strtoupper($request->jenis_kendaraan)
+                'jenis_kendaraan' => strtoupper($request->jenis_kendaraan),
+                'tanggal_beli_sewa_at' => $request->tanggal_beli_sewa_at,
+                'current_km' => $request->current_km,
+                'max_tangki' => $request->max_tangki,
+                'nama' => $request->nama
             ];
             if(strtoupper($request->status_kendaraan) == 'SEWA'){
                 $data['agen_sewa'] = strtoupper($request->agen_sewa);
-                $data['tanggal_sewa_start_at'] = $request->tanggal_sewa_start_at;
-                $data['tanggal_sewa_end_at'] = $request->tanggal_sewa_end_at;
+                $data['tanggal_jual_sewa_at'] = $request->tanggal_jual_sewa_at;
             }
             // dd($data, $request->all());
             MasterKendaraan::create($data);
@@ -102,12 +106,14 @@ class KendaraanController extends Controller
         $status_kendaraan = MasterKendaraan::$status_kendaraan;
         $jenis_kendaraan = MasterKendaraan::groupByTipe('jenis_kendaraan')->get()->pluck('jenis_kendaraan')->toArray();
         $agen_sewa = MasterKendaraan::groupByTipe('agen_sewa')->get()->pluck('agen_sewa')->toArray();
+        $status = MasterKendaraan::$status;
         return view('admin.master-data.master-kendaraan.create', compact(
             'base_url',
             'data',
             'status_kendaraan',
             'jenis_kendaraan',
-            'agen_sewa'
+            'agen_sewa',
+            'status'
         ));
     }
 
@@ -124,18 +130,18 @@ class KendaraanController extends Controller
         $model = MasterKendaraan::whereUuid($masterKendaraan)->first();
         try {
             $data = [
-                'status_kendaraan' => $request->status_kendaraan ?? null,
-                'jenis_kendaraan' => strtoupper($request->jenis_kendaraan ?? null),
+                'status_kendaraan' => $request->status_kendaraan,
+                'jenis_kendaraan' => strtoupper($request->jenis_kendaraan),
+                'tanggal_beli_sewa_at' => $request->tanggal_beli_sewa_at,
+                'current_km' => $request->current_km,
+                'max_tangki' => $request->max_tangki,
+                'nama' => $request->nama,
+                'tanggal_jual_sewa_at' => $request->tanggal_jual_sewa_at,
+                'status' => $request->status
             ];
 
-            if($request->status_kendaraan == 'SEWA'){
-                $data['agen_sewa'] = strtoupper($request->agen_sewa ?? null);
-                $data['tanggal_sewa_start_at'] = $request->tanggal_sewa_start_at ?? null;
-                $data['tanggal_sewa_end_at'] = $request->tanggal_sewa_end_at ?? null;
-            }else{
-                $data['agen_sewa'] = null;
-                $data['tanggal_sewa_start_at'] = null;
-                $data['tanggal_sewa_end_at'] = null;
+            if (strtoupper($request->status_kendaraan) == 'SEWA') {
+                $data['agen_sewa'] = strtoupper($request->agen_sewa);
             }
 
             $model->update($data);
