@@ -48,7 +48,7 @@ class {{ class }} extends Controller
         DB::beginTransaction();
         try {
             $data = [];
-            MasterKantor::create($data);
+            {{ model }}::create($data);
             DB::commit();
             return redirect($this->base_url)->withSuccess('Data Saved');
         } catch (\Throwable $th) {

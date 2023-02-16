@@ -99,9 +99,15 @@ class KendaraanController extends Controller
     {
         $data = MasterKendaraan::whereUuid($masterKendaraan)->first();
         $base_url = $this->base_url;
+        $status_kendaraan = MasterKendaraan::$status_kendaraan;
+        $jenis_kendaraan = MasterKendaraan::groupByTipe('jenis_kendaraan')->get()->pluck('jenis_kendaraan')->toArray();
+        $agen_sewa = MasterKendaraan::groupByTipe('agen_sewa')->get()->pluck('agen_sewa')->toArray();
         return view('admin.master-data.master-kendaraan.create', compact(
             'base_url',
-            'data'
+            'data',
+            'status_kendaraan',
+            'jenis_kendaraan',
+            'agen_sewa'
         ));
     }
 
@@ -117,7 +123,20 @@ class KendaraanController extends Controller
         DB::beginTransaction();
         $model = MasterKendaraan::whereUuid($masterKendaraan)->first();
         try {
-            $data = $request->all();
+            $data = [
+                'status_kendaraan' => $request->status_kendaraan ?? null,
+                'jenis_kendaraan' => strtoupper($request->jenis_kendaraan ?? null),
+            ];
+
+            if($request->status_kendaraan == 'SEWA'){
+                $data['agen_sewa'] = strtoupper($request->agen_sewa ?? null);
+                $data['tanggal_sewa_start_at'] = $request->tanggal_sewa_start_at ?? null;
+                $data['tanggal_sewa_end_at'] = $request->tanggal_sewa_end_at ?? null;
+            }else{
+                $data['agen_sewa'] = null;
+                $data['tanggal_sewa_start_at'] = null;
+                $data['tanggal_sewa_end_at'] = null;
+            }
 
             $model->update($data);
             DB::commit();

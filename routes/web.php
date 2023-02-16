@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'App\Http\Controllers\LoginController@index');
 Route::post('/login', 'App\Http\Controllers\LoginController@store');
+Route::get('/logout', function(){
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+});
 
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('dashboard',\App\Http\Controllers\Admin\Dashboard\DashboardController::class)->only('index');
@@ -23,4 +29,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('master-data/kantor',\App\Http\Controllers\Admin\MasterData\Kantor\KantorController::class)->except('show');
     Route::resource('master-data/tambang',\App\Http\Controllers\Admin\MasterData\Tambang\TambangController::class)->except('show');
     Route::resource('master-data/kendaraan',\App\Http\Controllers\Admin\MasterData\Kendaraan\KendaraanController::class)->except('show');
+    Route::middleware(['isAdmin'])->group(function () {
+        Route::resource('master-data/pegawai',\App\Http\Controllers\Admin\MasterData\Pegawai\PegawaiController::class)->except('show');
+    });
 });

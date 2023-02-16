@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="{{url('admin/dashboard')}}" class="brand-link">
         <img src="{{ asset('assets') }}/dist/img/AdminLTELogo.png" alt="AdminLTE Logo"
             class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">{{ config('app.name') }}</span>
@@ -82,12 +82,14 @@
                                 <p>Kendaraan</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ url('admin/master-data/pegawai') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Pegawai</p>
-                            </a>
-                        </li>
+                        @if(auth()->user()->attr_is_admin)
+                            <li class="nav-item">
+                                <a href="{{ url('admin/master-data/pegawai') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Pegawai</p>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
                 <!-- data pemesan -->
@@ -120,6 +122,19 @@
                         </li>
                     </ul>
                 </li>
+
+                <!-- logout -->
+                <li class="nav-item">
+                    <a href="{{ url('logout') }}"
+                        class="nav-link">
+                        <i class="nav-icon fas fa-door-open"></i>
+                        <p>
+                            Logout
+                            {{-- <span class="right badge badge-danger">New</span> --}}
+                        </p>
+                    </a>
+                </li>
+
                 {{--                <li class="nav-item"> --}}
                 {{--                    <a href="{{url('admin/article')}}" class="nav-link @if (request()->is('admin/article*')) active @endif"> --}}
                 {{--                        <i class="nav-icon fas fa-newspaper"></i> --}}

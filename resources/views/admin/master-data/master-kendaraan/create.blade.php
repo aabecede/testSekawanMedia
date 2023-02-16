@@ -86,7 +86,7 @@
                                                     @endif
                                                 </div>
 
-                                                <div class="form-group">
+                                                <div class="form-group form-sewa">
                                                     <label for="title">Agen Sewa</label>
                                                     <select class="js-select2-tags" name="agen_sewa" required>
                                                         @if(!empty(old('agen_sewa')))
@@ -111,9 +111,9 @@
                                                     @endif
                                                 </div>
 
-                                                <div class="form-group">
+                                                <div class="form-group form-sewa">
                                                     <label for="title">Tanggal Sewa Start</label>
-                                                    <input type="date" class="form-control" id="tanggal_sewa_start_at" name="tanggal_sewa_start_at" value="{{ $data->tanggal_sewa_start_at ?? null ?? old('tanggal_sewa_start_at') }}">
+                                                    <input type="date" class="form-control" id="tanggal_sewa_start_at" name="tanggal_sewa_start_at" value="{{ \Carbon\Carbon::parse($data->tanggal_sewa_start_at ?? now())->format('Y-m-d') ?? null ?? old('tanggal_sewa_start_at') }}">
                                                     @if (session('validator')['tanggal_sewa_start_at'] ?? null)
                                                         <div class="invalid-feedback" style="display: inline;">
                                                             @foreach (session('validator')['tanggal_sewa_start_at'] as $item)
@@ -122,9 +122,9 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                                <div class="form-group">
+                                                <div class="form-group form-sewa">
                                                     <label for="title">Tanggal Sewa End</label>
-                                                    <input type="date" class="form-control" id="tanggal_sewa_end_at" name="tanggal_sewa_end_at" value="{{ $data->tanggal_sewa_end_at ?? null ?? old('tanggal_sewa_end_at') }}">
+                                                    <input type="date" class="form-control" id="tanggal_sewa_end_at" name="tanggal_sewa_end_at" value="{{ \Carbon\Carbon::parse($data->tanggal_sewa_end_at ?? now())->format('Y-m-d') ?? null ?? old('tanggal_sewa_end_at') }}">
                                                     @if (session('validator')['tanggal_sewa_end_at'] ?? null)
                                                         <div class="invalid-feedback" style="display: inline;">
                                                             @foreach (session('validator')['tanggal_sewa_end_at'] as $item)
@@ -155,3 +155,17 @@
         <!-- /.container-fluid -->
     </section>
 @endsection
+@push('js')
+    <script>
+        $(document).on('change', '[name="status_kendaraan"]', function(){
+            let vall = $(this).val()
+            if(vall == 'PRIBADI'){
+                $('.form-sewa').hide();
+            }
+            else{
+                $('.form-sewa').show();
+            }
+        });
+        $('[name="status_kendaraan"]').val(`{{ $data->status_kendaraan ?? 'SEWA' }}`).trigger('change')
+    </script>
+@endpush
