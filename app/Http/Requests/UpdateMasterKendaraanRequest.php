@@ -1,13 +1,13 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
-class {{ class }} extends FormRequest
+class UpdateMasterKendaraanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

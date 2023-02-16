@@ -1,8 +1,5 @@
 @extends('baseLayout.index')
 @section('content')
-    @php
-        $arr_select_data = explode(',', $selected_data);
-    @endphp
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -15,51 +12,45 @@
                                     <a href="{{ url()->current().'/create' }}" class="btn btn-primary">New Data</a>
                                 </div>
                             </div>
-                            <div style="overflow-x: auto;">
-                                <table id="example1" class="table table-bordered table-striped">
-                                    <thead>
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">NO</th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @forelse ($data as $key => $item)
                                     <tr>
-                                        <th class="text-center">NO</th>
-                                        @foreach($arr_select_data as $key => $value)
-                                            @if($value != 'uuid')
-                                                <th class="text-center">{{ explodeImplode(strtoupper($value)) }}</th>
-                                            @endif
-                                        @endforeach
-                                        <th class="text-center">Action</th>
+                                        <td class="text-center">{{$loop->iteration}}</td>
+                                        <td class="text-center">{{$item->master_region->nama}}</td>
+                                        <td class="text-center">{{$item->nama}}</td>
+                                        <td class="text-center">{{$item->alamat}}</td>
+                                        <td>
+                                            {{-- <a class="btn btn-primary"
+                                               href="{{ url()->current() }}/{{ $item->uuid }}">
+                                                Detail
+                                            </a> --}}
+                                            <a class="btn btn-warning"
+                                               href="{{ url()->current() }}/{{ $item->uuid }}/edit">
+                                                Edit
+                                            </a>
+                                            <button class="btn btn-danger" id="btnDeleteArticle"
+                                                    data-id="{{ $item->uuid }}" type="button">
+                                                Delete
+                                            </button>
+                                        </td>
                                     </tr>
-                                    </thead>
-                                    <tbody>
-                                    @forelse ($data as $key => $item)
-                                        <tr>
-                                            <td class="text-center">{{$loop->iteration}}</td>
-                                            @foreach($item->toArray() as $item_key => $value)
-                                                @if($item_key != 'uuid')
-                                                    <td class="text-left">{{$value}}</td>
-                                                @endif
-                                            @endforeach
-                                            <td>
-                                                {{-- <a class="btn btn-primary"
-                                                   href="{{ url()->current() }}/{{ $item->uuid }}">
-                                                    Detail
-                                                </a> --}}
-                                                <a class="btn btn-warning"
-                                                   href="{{ url()->current() }}/{{ $item->uuid }}/edit">
-                                                    Edit
-                                                </a>
-                                                <button class="btn btn-danger" id="btnDeleteArticle"
-                                                        data-id="{{ $item->uuid }}" type="button">
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="{{count()}}">No Data</td>
-                                        </tr>
-                                    @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
+                                @empty
+                                    <tr>
+                                        <td colspan="{{count()}}">No Data</td>
+                                    </tr>
+                                @endforelse
+                                </tbody>
+                            </table>
                             <div class="d-flex justify-content-center mt-3">
                                 {!! $data->links() !!}
                             </div>

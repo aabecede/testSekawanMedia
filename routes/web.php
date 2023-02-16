@@ -22,4 +22,5 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('master-data/region',\App\Http\Controllers\Admin\MasterData\Region\RegionController::class)->except('show');
     Route::resource('master-data/kantor',\App\Http\Controllers\Admin\MasterData\Kantor\KantorController::class)->except('show');
     Route::resource('master-data/tambang',\App\Http\Controllers\Admin\MasterData\Tambang\TambangController::class)->except('show');
+    Route::resource('master-data/kendaraan',\App\Http\Controllers\Admin\MasterData\Kendaraan\KendaraanController::class)->except('show');
 });
