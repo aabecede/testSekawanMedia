@@ -15,4 +15,8 @@ class MasterTambang extends Model
 
     protected $table = 'master_tambang';
     protected $guarded = ['id'];
+
+    public function master_region(){
+        return $this->hasOne(MasterRegion::class, 'id', 'master_region_id');
+    }
 }

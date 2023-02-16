@@ -4,6 +4,7 @@ namespace {{ namespace }};
 
 use {{ namespacedModel }};
 use {{ rootNamespace }}Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use {{ namespacedRequests }}
 
 class {{ class }} extends Controller
@@ -13,9 +14,14 @@ class {{ class }} extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    protected $select = '*'; #untuk selectnya
+    protected $base_url = ''; #base url routenya
     public function index()
     {
-        //
+        $base_url = $this->base_url;
+        return view('', compact(
+            'base_url'
+        ));
     }
 
     /**
@@ -25,7 +31,10 @@ class {{ class }} extends Controller
      */
     public function create()
     {
-        //
+        $base_url = $this->base_url;
+        return view('', compact(
+            'base_url'
+        ));
     }
 
     /**
@@ -36,7 +45,16 @@ class {{ class }} extends Controller
      */
     public function store({{ storeRequest }} $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $data = [];
+            MasterKantor::create($data);
+            DB::commit();
+            return redirect($this->base_url)->withSuccess('Data Saved');
+        } catch (\Throwable $th) {
+            DB::rollback();
+            dd($th);
+        }
     }
 
     /**
@@ -56,9 +74,14 @@ class {{ class }} extends Controller
      * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function edit({{ model }} ${{ modelVariable }})
+    public function edit(String ${{ modelVariable }})
     {
-        //
+        $data = {{ model }}::whereUuid(${{modelVariable}})->first();
+        $base_url = $this->base_url;
+        return view('', compact(
+            'base_url',
+            'data'
+        ));
     }
 
     /**
@@ -68,9 +91,20 @@ class {{ class }} extends Controller
      * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function update({{ updateRequest }} $request, {{ model }} ${{ modelVariable }})
+    public function update({{ updateRequest }} $request, String ${{ modelVariable }})
     {
-        //
+        DB::beginTransaction();
+        $model = {{ model }}::whereUuid(${{ modelVariable }})->first();
+        try {
+            $data = $request->all();
+
+            $model->update($data);
+            DB::commit();
+            return redirect($this->base_url)->withSuccess('Data Changed');
+        } catch (\Throwable $th) {
+            DB::rollback();
+            dd($th);
+        }
     }
 
     /**
@@ -79,8 +113,23 @@ class {{ class }} extends Controller
      * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function destroy({{ model }} ${{ modelVariable }})
+    public function destroy(String ${{ modelVariable }})
     {
-        //
+        try {
+            DB::beginTransaction();
+            $model = {{ model }}::whereUuid(${{modelVariable}})->first();
+            if (empty($model)) {
+                return $this->errorJson();
+            }
+            $model->delete();
+            $result = [
+                'url' => url($this->base_url)
+            ];
+            DB::commit();
+            return $this->successJson($result);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $this->exceptionJson($th);
+        }
     }
 }

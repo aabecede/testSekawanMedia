@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UpdateMasterTambangRequest extends FormRequest
 {
@@ -13,7 +16,7 @@ class UpdateMasterTambangRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +27,25 @@ class UpdateMasterTambangRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'master_region_id' => [
+                'required',
+                Rule::exists('master_region', 'id')
+            ],
+            'nama' => [
+                'required',
+            ],
+            'alamat' => [
+                'required',
+            ],
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+
+        $warning = $validator->errors()->messages();
+        throw new HttpResponseException(
+            back()->withInput()->with('validator', $warning)
+        );
     }
 }
