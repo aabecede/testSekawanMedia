@@ -116,7 +116,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('admin/bbm') }}" class="nav-link">
+                            <a href="{{ url('admin/konsumsi-bbm') }}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Pengisian BBM</p>
                             </a>

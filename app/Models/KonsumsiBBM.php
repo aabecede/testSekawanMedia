@@ -15,4 +15,25 @@ class KonsumsiBBM extends Model
 
     protected $table = 'konsumsi_bbm';
     protected $guarded = ['id'];
+
+    /**relation */
+    public function master_kendaraan(){
+        return $this->hasOne(MasterKendaraan::class, 'id', 'master_kendaraan_id');
+    }
+    /**end relation */
+
+    /*8atribute*/
+    public function getAttrTanggalIsiFormatAttribute()
+    {
+        return baseDateFormat($this->tanggal_isi_at, 'j F Y H:i');
+    }
+
+    public function getAttrTotalLiterFormatAttribute(){
+        return globalNumberFormat($this->total_liter).'L';
+    }
+
+    public function getAttrTotalHargaFormatAttribute(){
+        return 'Rp.'. globalNumberFormat($this->total_harga);
+    }
+    /**end atribute */
 }

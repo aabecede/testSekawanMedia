@@ -36,4 +36,5 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     });
     Route::resource('pemesanan',\App\Http\Controllers\Admin\Pemesanan\PemesananController::class)->except('show');
     Route::resource('jadwal-service',\App\Http\Controllers\Admin\JadwalService\JadwalServiceController::class)->except('show');
+    Route::resource('konsumsi-bbm',\App\Http\Controllers\Admin\KonsumsiBbm\KonsumsiBbmController::class)->except('show');
 });
