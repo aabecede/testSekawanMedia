@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'App\Http\Controllers\LoginController@index');
+Route::get('/', 'App\Http\Controllers\LoginController@index')->name('login');
 Route::post('/login', 'App\Http\Controllers\LoginController@store');
 Route::get('/logout', function(){
     Auth::logout();
@@ -25,11 +25,14 @@ Route::get('/logout', function(){
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('dashboard',\App\Http\Controllers\Admin\Dashboard\DashboardController::class)->only('index');
 
-    Route::resource('master-data/region',\App\Http\Controllers\Admin\MasterData\Region\RegionController::class)->except('show');
-    Route::resource('master-data/kantor',\App\Http\Controllers\Admin\MasterData\Kantor\KantorController::class)->except('show');
-    Route::resource('master-data/tambang',\App\Http\Controllers\Admin\MasterData\Tambang\TambangController::class)->except('show');
-    Route::resource('master-data/kendaraan',\App\Http\Controllers\Admin\MasterData\Kendaraan\KendaraanController::class)->except('show');
     Route::middleware(['isAdmin'])->group(function () {
+        Route::resource('master-data/region',\App\Http\Controllers\Admin\MasterData\Region\RegionController::class)->except('show');
+        Route::resource('master-data/kantor',\App\Http\Controllers\Admin\MasterData\Kantor\KantorController::class)->except('show');
+        Route::resource('master-data/tambang',\App\Http\Controllers\Admin\MasterData\Tambang\TambangController::class)->except('show');
+        Route::resource('master-data/kendaraan',\App\Http\Controllers\Admin\MasterData\Kendaraan\KendaraanController::class)->except('show');
+        Route::get('master-data/kendaraan-pemesanan-avilable', 'App\Http\Controllers\Admin\MasterData\Kendaraan\KendaraanController@pemesananKendaraanAvailable');
         Route::resource('master-data/pegawai',\App\Http\Controllers\Admin\MasterData\Pegawai\PegawaiController::class)->except('show');
+        Route::get('master-data/pegawai-driver-pemesanan-avilable', 'App\Http\Controllers\Admin\MasterData\Pegawai\PegawaiController@pemesananDriverAvailable');
     });
+    Route::resource('pemesanan',\App\Http\Controllers\Admin\Pemesanan\PemesananController::class)->except('show');
 });

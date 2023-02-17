@@ -70,3 +70,35 @@ if (!function_exists('baseDateFormat')) {
         return $result;
     }
 }
+
+if (!function_exists('toSqlWithBinding')) {
+    function toSqlWithBinding($builder, $get = true)
+    {
+        try {
+            $addSlashes = str_replace('?', "'?'", $builder->toSql());
+            $query =  vsprintf(str_replace('?', '%s', $addSlashes), $builder->getBindings());
+            dd($query, $builder->get()->toArray());
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+        $builder_get = collect([]);
+        if ($get) {
+            $builder_get = $builder->get()->toArray();
+        }
+        dd($builder->toSql(), $builder->getBindings(), $builder_get);
+    }
+}
+
+if (!function_exists('globalRoundCustom')) {
+    function globalRoundCustom(float $number)
+    {
+        return round($number, 3);
+    }
+}
+
+if (!function_exists('globalNumberFormat')) {
+    function globalNumberFormat(float $number)
+    {
+        return number_format(globalRoundCustom($number), 2);
+    }
+}

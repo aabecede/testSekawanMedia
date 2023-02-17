@@ -42,6 +42,26 @@ class User extends Authenticatable
     static $enum_role = ['admin', 'super-admin', 'kepala-cabang', 'kepala-region', 'staff'];
     static $enum_status = ['aktif', 'in-aktif'];
 
+/**SCOPE */
+    public function scopeDriver($query)
+    {
+        $query->whereJabatan('DRIVER');
+        return $query;
+    }
+    public function scopeJabatanKepala($query)
+    {
+        $query->whereIn('jabatan', ["KEPALA CABANG", "KEPALA REGION"]);
+        return $query;
+    }
+    public function scopeNotDriver($query)
+    {
+        $query->where('jabatan', '!=', 'DRIVER');
+        return $query;
+    }
+
+/** END SCOPE */
+
+/**ATTRIBUTE */
     public function getAttrStatusAttribute(){
         return strtoupper($this->status);
     }
@@ -56,4 +76,19 @@ class User extends Authenticatable
         }
         return false;
     }
+
+    public function getAttrUserJabatanAttribute(){
+        return $this->name.' - '.$this->jabatan;
+    }
+/**END ATTRIBUTE */
+
+/**RELATION */
+    public function pemesanan_driver(){
+        return $this->hasMany(Pemesanan::class, 'driver', 'id');
+    }
+
+    public function pemesanan_driver_aktif(){
+        return $this->pemesanan_driver()->whereIn('status', [2, 3]);
+    }
+/**END RELATION */
 }

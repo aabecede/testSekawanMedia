@@ -33,7 +33,24 @@ class MasterKendaraan extends Model
         return $query;
     }
 
+    public function scopeKendaraanAktif($query){
+        $query->where('status', 1);
+    }
+
+
+    public function pemesanan_kendaraan(){
+        return $this->hasMany(Pemesanan::class, 'master_kendaraan_id', 'id');
+    }
+
+    public function pemesanan_kendaraan_aktif(){
+        return $this->pemesanan_kendaraan()->whereIn('status', [1,2,3]);
+    }
+
     public function getAttrStatusAttribute(){
         return self::$status[$this->status];
+    }
+
+    public function getAttrDetailKendaraanAttribute(){
+        return "$this->nama - $this->jenis_kendaraan - MAX Tangki: $this->max_tangki - KM : ". globalNumberFormat($this->current_km);
     }
 }

@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="{{url('admin/dashboard')}}" class="brand-link">
+    <a href="{{ url('admin/dashboard') }}" class="brand-link">
         <img src="{{ asset('assets') }}/dist/img/AdminLTELogo.png" alt="AdminLTE Logo"
             class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">{{ config('app.name') }}</span>
@@ -49,49 +49,50 @@
                     </a>
                 </li>
                 <!-- data master -->
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-table"></i>
-                        <p>
-                            Master Data
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ url('admin/master-data/region') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Region</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url('admin/master-data/kantor') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kantor</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url('admin/master-data/tambang') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Tambang</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url('admin/master-data/kendaraan') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kendaraan</p>
-                            </a>
-                        </li>
-                        @if(auth()->user()->attr_is_admin)
+                @if (auth()->user()->attr_is_admin)
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-table"></i>
+                            <p>
+                                Master Data
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ url('admin/master-data/region') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Region</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url('admin/master-data/kantor') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Kantor</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url('admin/master-data/tambang') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Tambang</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url('admin/master-data/kendaraan') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Kendaraan</p>
+                                </a>
+                            </li>
+
                             <li class="nav-item">
                                 <a href="{{ url('admin/master-data/pegawai') }}" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Pegawai</p>
                                 </a>
                             </li>
-                        @endif
-                    </ul>
-                </li>
+                        </ul>
+                    </li>
+                @endif
                 <!-- data pemesan -->
                 <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -103,19 +104,19 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="javascript::void(0);" class="nav-link">
+                            <a href="{{ url('admin/pemesanan') }}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Pemesanan</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="javascript::void(0);" class="nav-link">
+                            <a href="{{ url('admin/jadwal-service') }}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Jadwal Service</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="javascript::void(0);" class="nav-link">
+                            <a href="{{ url('admin/bbm') }}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Pengisian BBM</p>
                             </a>
@@ -125,8 +126,7 @@
 
                 <!-- logout -->
                 <li class="nav-item">
-                    <a href="{{ url('logout') }}"
-                        class="nav-link">
+                    <a href="{{ url('logout') }}" class="nav-link">
                         <i class="nav-icon fas fa-door-open"></i>
                         <p>
                             Logout

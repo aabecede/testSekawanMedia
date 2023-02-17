@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Admin\MasterData\Kendaraan;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\MaserData\PemesananKendaraanAvailAbleRequest;
 use App\Models\MasterKendaraan;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreMasterKendaraanRequest;
 use App\Http\Requests\UpdateMasterKendaraanRequest;
+use App\Models\Pemesanan;
+use Carbon\Carbon;
 
 class KendaraanController extends Controller
 {
@@ -175,6 +178,43 @@ class KendaraanController extends Controller
             return $this->successJson($result);
         } catch (\Throwable $th) {
             DB::rollBack();
+            return $this->exceptionJson($th);
+        }
+    }
+
+    public function pemesananKendaraanAvailable(PemesananKendaraanAvailAbleRequest $request){
+        try {
+
+            $request->merge([
+                'tanggal_berangkat' => Carbon::parse($request->tanggal_berangkat),
+                'tanggal_pulang' => Carbon::parse($request->tanggal_pulang),
+            ]);
+            $base_pemesanan = Pemesanan::selectRaw('id,master_kendaraan_id,status,tanggal_keberangkatan_at,tanggal_pulang_at')
+                        ->whereIn('status', [1,2,3]);
+
+            $arr_master_kendaraan_id = with(clone $base_pemesanan)
+                ->where(function($q){
+                    $q->where('tanggal_keberangkatan_at', '>=', request()->tanggal_berangkat)
+                    ->where('tanggal_keberangkatan_at', '<=', request()->tanggal_pulang);
+                })
+                ->get()
+                ->pluck('master_kendaraan_id')
+                ->toArray();
+
+            $kendaraan = MasterKendaraan::whereNotIn('id', $arr_master_kendaraan_id)
+                        ->selectRaw('id,nama,jenis_kendaraan,status_kendaraan,agen_sewa,max_tangki,current_km')
+                        ->where('status', 1)
+                        ->get()
+                        ->each->append('attr_detail_kendaraan');
+
+            $result = [
+                'data' => $kendaraan
+            ];
+
+            return $this->successJson($result);
+
+
+        } catch (\Throwable $th) {
             return $this->exceptionJson($th);
         }
     }

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin\MasterData\Pegawai;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\MaserData\PemesananDriverAvailAbleRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\MasterRegion;
+use App\Models\Pemesanan;
+use Carbon\Carbon;
 
 class PegawaiController extends Controller
 {
@@ -175,6 +178,43 @@ class PegawaiController extends Controller
             return $this->successJson($result);
         } catch (\Throwable $th) {
             DB::rollBack();
+            return $this->exceptionJson($th);
+        }
+    }
+
+    public function pemesananDriverAvailable(PemesananDriverAvailAbleRequest $request){
+        try {
+
+            $request->merge([
+                'tanggal_berangkat' => Carbon::parse($request->tanggal_berangkat),
+                'tanggal_pulang' => Carbon::parse($request->tanggal_pulang),
+            ]);
+            $base_pemesanan = Pemesanan::selectRaw('id,driver,status,tanggal_keberangkatan_at,tanggal_pulang_at')
+                ->whereIn('status', [1, 2, 3]);
+
+            $arr_driver = with(clone $base_pemesanan)
+                ->where(function ($q) {
+                    $q->where('tanggal_keberangkatan_at', '>=', request()->tanggal_berangkat)
+                        ->where('tanggal_keberangkatan_at', '<=', request()->tanggal_pulang);
+                })
+                ->get()
+                ->pluck('driver')
+                ->toArray();
+
+            $driver = User::whereNotIn('id', $arr_driver)
+                ->selectRaw('id,name,nip,jabatan,role')
+                ->where('jabatan', 'DRIVER')
+                ->where('status', 'aktif')
+                ->get()
+                ->each
+                ->append('attr_user_jabatan');
+
+            $result = [
+                'data' => $driver
+            ];
+
+            return $this->successJson($result);
+        } catch (\Throwable $th) {
             return $this->exceptionJson($th);
         }
     }
