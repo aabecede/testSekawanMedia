@@ -35,4 +35,5 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('master-data/pegawai-driver-pemesanan-avilable', 'App\Http\Controllers\Admin\MasterData\Pegawai\PegawaiController@pemesananDriverAvailable');
     });
     Route::resource('pemesanan',\App\Http\Controllers\Admin\Pemesanan\PemesananController::class)->except('show');
+    Route::resource('jadwal-service',\App\Http\Controllers\Admin\JadwalService\JadwalServiceController::class)->except('show');
 });

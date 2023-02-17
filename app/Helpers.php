@@ -102,3 +102,17 @@ if (!function_exists('globalNumberFormat')) {
         return number_format(globalRoundCustom($number), 2);
     }
 }
+
+if (!function_exists('slugCustom')) {
+    function slugCustom($name)
+    {
+        $slug = preg_replace('~[^\pL\d]+~u', '-', $name);
+        $slug = iconv('utf-8', 'us-ascii//TRANSLIT', $slug); // transliterate
+        $slug = preg_replace('~[^-\w]+~', '', $slug); // remove unwanted characters
+        $slug = trim($slug, '-'); // trim
+        $slug = preg_replace('~-+~', '-', $slug); // remove duplicate -
+        $slug = strtolower($slug); // lowercase
+
+        return $slug;
+    }
+}

@@ -9,16 +9,19 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12 mb-3 text-right">
-                                    <a href="{{ url()->current().'/create' }}" class="btn btn-primary">New Data</a>
+                                    @if(auth()->user()->attr_is_admin)
+                                        <a href="{{ url()->current().'/create' }}" class="btn btn-primary">New Data</a>
+                                    @endif
                                 </div>
                             </div>
                             <table id="example1" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
                                     <th class="text-center">NO</th>
-                                    <th class="text-center">Region</th>
-                                    <th class="text-center">Nama</th>
-                                    <th class="text-center">Alamat</th>
+                                    <th class="text-center">Kendaraan</th>
+                                    <th class="text-center">Tanggal Service</th>
+                                    <th class="text-center">Keterangan</th>
+                                    <th class="text-center">Bukti Struk</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                                 </thead>
@@ -26,22 +29,33 @@
                                 @forelse ($data as $key => $item)
                                     <tr>
                                         <td class="text-center">{{$loop->iteration}}</td>
-                                        <td class="text-center">{{$item->master_region->nama}}</td>
-                                        <td class="text-center">{{$item->nama}}</td>
-                                        <td class="text-center">{{$item->alamat}}</td>
-                                        <td>
-                                            {{-- <a class="btn btn-primary"
-                                               href="{{ url()->current() }}/{{ $item->uuid }}">
-                                                Detail
-                                            </a> --}}
-                                            <a class="btn btn-warning"
-                                               href="{{ url()->current() }}/{{ $item->uuid }}/edit">
-                                                Edit
+                                        <td class="text-center">
+                                            {{$item->master_kendaraan->attr_detail_kendaraan}}<br>
+                                        </td>
+                                        <td class="text-center">
+                                            {{ $item->attr_tanggal_service_format }}
+                                        </td>
+                                        <td class="text-center">{{cutText($item->keterangan, 40)}}</td>
+                                        <td class="text-center">
+                                            <a href="{{ imageExists($item->bukti_struk) }}" target="_blank">
+                                                <img src="{{ imageExists($item->bukti_struk) }}" style="max-width:200px;height:auto;">
                                             </a>
-                                            <button class="btn btn-danger" id="btnDeleteArticle"
-                                                    data-id="{{ $item->uuid }}" type="button">
-                                                Delete
-                                            </button>
+                                        </td>
+                                        <td>
+                                            @if(auth()->user()->attr_is_admin)
+                                                {{-- <a class="btn btn-primary"
+                                                href="{{ url()->current() }}/{{ $item->uuid }}">
+                                                    Detail
+                                                </a> --}}
+                                                <a class="btn btn-warning"
+                                                href="{{ url()->current() }}/{{ $item->uuid }}/edit">
+                                                    Edit
+                                                </a>
+                                                <button class="btn btn-danger" id="btnDeleteArticle"
+                                                        data-id="{{ $item->uuid }}" type="button">
+                                                    Delete
+                                                </button>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

@@ -71,7 +71,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="{{count()}}">No Data</td>
+                                            <td colspan="0">No Data</td>
                                         </tr>
                                     @endforelse
                                     </tbody>
