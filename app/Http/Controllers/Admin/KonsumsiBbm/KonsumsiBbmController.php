@@ -37,6 +37,7 @@ class KonsumsiBbmController extends Controller
      */
     public function create()
     {
+        $this->middleware('isAdmin');
         $base_url = $this->base_url;
         $kendaraan = MasterKendaraan::All();
         return view('admin.konsumsi-bbm.create', compact(
@@ -53,7 +54,7 @@ class KonsumsiBbmController extends Controller
      */
     public function store(StoreKonsumsiBBMRequest $request)
     {
-
+        $this->middleware('isAdmin');
         DB::beginTransaction();
         try {
 
@@ -108,6 +109,7 @@ class KonsumsiBbmController extends Controller
      */
     public function edit(String $konsumsiBBM)
     {
+        $this->middleware('isAdmin');
         $data = KonsumsiBBM::whereUuid($konsumsiBBM)->first();
         $base_url = $this->base_url;
         $kendaraan = MasterKendaraan::All();
@@ -127,6 +129,7 @@ class KonsumsiBbmController extends Controller
      */
     public function update(UpdateKonsumsiBBMRequest $request, String $konsumsiBBM)
     {
+        $this->middleware('isAdmin');
         DB::beginTransaction();
         $model = KonsumsiBBM::whereUuid($konsumsiBBM)->first();
         try {
@@ -177,6 +180,7 @@ class KonsumsiBbmController extends Controller
      */
     public function destroy(String $konsumsiBBM)
     {
+        $this->middleware('isAdmin');
         try {
             DB::beginTransaction();
             $model = KonsumsiBBM::whereUuid($konsumsiBBM)->first();

@@ -35,6 +35,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
         Route::get('master-data/pegawai-driver-pemesanan-avilable', 'App\Http\Controllers\Admin\MasterData\Pegawai\PegawaiController@pemesananDriverAvailable');
     });
     Route::resource('pemesanan',\App\Http\Controllers\Admin\Pemesanan\PemesananController::class)->except('show');
+    Route::post('pemesanan/konfirmasi-penyetuju', 'App\Http\Controllers\Admin\Pemesanan\PemesananController@konfirmasiPenyetuju');
+    Route::post('pemesanan/ubah-status-jalan', 'App\Http\Controllers\Admin\Pemesanan\PemesananController@ubahStatusJalan');
     Route::resource('jadwal-service',\App\Http\Controllers\Admin\JadwalService\JadwalServiceController::class)->except('show');
     Route::resource('konsumsi-bbm',\App\Http\Controllers\Admin\KonsumsiBbm\KonsumsiBbmController::class)->except('show');
 });

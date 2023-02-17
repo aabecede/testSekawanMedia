@@ -112,5 +112,21 @@
             text: 'Something went wrong!',
         })
     }
+
+    @if (session('success') ?? null)
+        callSwal({
+            type: 'success',
+            title: 'Berhasil',
+            text: `{{ session('success') }}`,
+            url: 0
+        })
+    @elseif(session('error') ?? null)
+        callSwal({
+            type: 'warning',
+            title: 'Gagal !',
+            text: `{{ session('error') }}`,
+            url: 0
+        })
+    @endif
 </script>
 @stack('js')

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin\Pemesanan;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Pemesanan\KonfirmasiPenyetujuRequest;
+use App\Http\Requests\Admin\Pemesanan\UbahStatusJalanRequest;
 use App\Models\Pemesanan;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StorePemesananRequest;
@@ -30,9 +32,11 @@ class PemesananController extends Controller
             'user_pengaju:id,name,jabatan'
         ])
             ->paginate(10);
+        $status_penyetuju = Pemesanan::$status_penyetuju;
         return view('admin.pemesanan.index', compact(
             'base_url',
-            'data'
+            'data',
+            'status_penyetuju'
         ));
     }
 
@@ -139,7 +143,7 @@ class PemesananController extends Controller
         DB::beginTransaction();
         $model = Pemesanan::whereUuid($pemesanan)->first();
         if(in_array($model->status, [1,2,3])){
-            return back()->withInput()->withError('Pemesanan Disetujui Tidak bisa Dirubah');
+            return back()->withInput()->withError('Pemesanan Telah Disetujui / Selesai');
         }
         try {
             $kendaraan = MasterKendaraan::selectRaw('current_km')->find($request->master_kendaraan_id);
@@ -176,6 +180,9 @@ class PemesananController extends Controller
         try {
             DB::beginTransaction();
             $model = Pemesanan::whereUuid($pemesanan)->first();
+            if (in_array($model->status, [1, 2, 3])) {
+                return $this->errorJson([], 'Pemesanan Telah Disetujui / Selesai');
+            }
             if (empty($model)) {
                 return $this->errorJson();
             }
@@ -184,6 +191,81 @@ class PemesananController extends Controller
                 'url' => url($this->base_url)
             ];
             DB::commit();
+            return $this->successJson($result);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $this->exceptionJson($th);
+        }
+    }
+
+    public function konfirmasiPenyetuju(KonfirmasiPenyetujuRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $base_pemesanan = Pemesanan::whereUuid($request->uuid);
+            if($request->penyetuju == 1){
+                $pemesanan = with(clone $base_pemesanan)->where('penyetuju', $request->penyetuju_id);
+                $data = [
+                    'status_penyetuju' => $request->status_penyetuju,
+                    'status_alasan_penyetuju' => $request->alasan_penyetuju,
+                ];
+            }
+            elseif($request->penyetuju == 2){
+                $pemesanan = with(clone $base_pemesanan)->where('penyetuju2', $request->penyetuju_id);
+                $data = [
+                    'status_penyetuju2' => $request->status_penyetuju,
+                    'status_alasan_penyetuju2' => $request->alasan_penyetuju,
+                ];
+            }
+            else{
+                return $this->errorJson();
+            }
+            $update_pemesanan = $pemesanan->update($data);
+            $pemesanan = with(clone $base_pemesanan)->first();
+
+            //update status
+            if($pemesanan->status_penyetuju == 1 && $pemesanan->status_penyetuju2 == 1){
+                $data = [
+                    'status' => 1
+                ];
+            }
+            elseif ($pemesanan->status_penyetuju == -1 && $pemesanan->status_penyetuju2 == -1) {
+                $data = [
+                    'status' => -1
+                ];
+            }
+            $pemesanan->update($data);
+            $result = [
+                'url' => url($this->base_url)
+            ];
+            DB::commit();
+            return $this->successJson($result);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return $this->exceptionJson($th);
+        }
+    }
+
+    public function ubahStatusJalan(UbahStatusJalanRequest $request){
+        DB::beginTransaction();
+        try {
+            $pemesanan = Pemesanan::whereUuid($request->uuid)->first();
+
+            if(in_array($pemesanan->status, [1,2,3])){
+                if ($pemesanan->status == 3) {
+                    return $this->errorJson([], 'Status sudah selesai');
+                }
+                $pemesanan->status += 1;
+            }else{
+                return $this->errorJson([], 'Status Tidak Ditemukan');
+            }
+            $pemesanan->updated_by = auth()->id();
+            $pemesanan->save();
+
+            DB::commit();
+            $result = [
+                'url' => url($this->base_url)
+            ];
             return $this->successJson($result);
         } catch (\Throwable $th) {
             DB::rollBack();

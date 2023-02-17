@@ -49,8 +49,10 @@
                                         <td class="text-left">
                                             Penyetuju 1 : <span class="badge badge-info">{{ $item->user_penyetuju_1->name  }}</span><br>
                                             Status Penyetuju 1 : {!! $item->attr_status_penyetuju_badge  !!}<br>
+                                            Alsan Status Penyetuju 1 : <span class="badge badge-dark">{{ $item->status_alasan_penyetuju  }}</span><br>
                                             Penyetuju 2 : <span class="badge badge-primary">{{ $item->user_penyetuju_2->name  }}</span><br>
                                             Status Penyetuju 1 : {!! $item->attr_status_penyetuju2_badge  !!}<br>
+                                            Alsan Status Penyetuju 1 : <span class="badge badge-dark">{{ $item->status_alasan_penyetuju2  }}</span><br>
                                         </td>
                                         <td>
                                             @if(auth()->user()->attr_is_admin)
@@ -66,7 +68,33 @@
                                                         data-id="{{ $item->uuid }}" type="button">
                                                     Delete
                                                 </button>
+                                                @if($item->status == 1)
+                                                    <button class="btn btn-info btn-ubah-status" data-uuid="{{ $item->uuid }}">Ubah Status Jalan</button>
+                                                @elseif($item->status == 2)
+                                                    <button class="btn btn-info btn-ubah-status" data-uuid="{{ $item->uuid }}">Ubah Status Selesai</button>
+                                                @endif
                                             @endif
+
+                                            @if($item->penyetuju == auth()->user()->id)
+                                                @if(!in_array($item->status, [2,3]))
+                                                    <button class="btn btn-info btn-penyetuju" data-penyetuju="1" data-penyetujuid="{{$item->penyetuju}}" data-uuid="{{ $item->uuid }}">Konfirmasi</button>
+                                                @elseif($item->status == 2)
+                                                    <span class="badge badge-warning">Sedang Perjalanan</span>
+                                                @elseif($item->status == 3)
+                                                    <span class="badge badge-success">Selesai</span>
+                                                @endif
+                                            @endif
+
+                                            @if($item->penyetuju2 == auth()->user()->id)
+                                                @if(!in_array($item->status, [2,3]))
+                                                    <button class="btn btn-primary btn-penyetuju" data-penyetuju="2" data-penyetujuid="{{$item->penyetuju2}}" data-uuid="{{ $item->uuid }}">Konfirmasi</button>
+                                                @elseif($item->status == 2)
+                                                    <span class="badge badge-warning">Sedang Perjalanan</span>
+                                                @elseif($item->status == 3)
+                                                    <span class="badge badge-success">Selesai</span>
+                                                @endif
+                                            @endif
+
                                         </td>
                                     </tr>
                                 @empty
@@ -142,6 +170,103 @@
                     });
                 }
             })
+        })
+
+        $(document).on('click', '.btn-penyetuju', function(){
+            let option = ``
+            @foreach ($status_penyetuju as $key => $value )
+                @if($key != 0)
+                    option += `<option value="{{ $key }}"> {{ strtoupper($value) }} </option>`
+                @endif
+            @endforeach
+            const { value: formValues } = Swal.fire({
+            title: 'Konfirmasi Persetujuan',
+            html:
+                `
+                <label>Status</label>
+                <select class="js-select2 swal2-input" name="status_penyetuju" id="status_penyetuju" required>${option}</select><br>
+                <label>Alasan Status</label>
+                <input type="text" class="swal2-input" name="alasan_status" id="alasan_status" required>`,
+            focusConfirm: false,
+             preConfirm: () => {
+                    return [
+                        document.getElementById('status_penyetuju').value,
+                        document.getElementById('alasan_status').value
+                    ]
+                }
+            }).then((result) => {
+                if(result.isConfirmed){
+                    // console.log(result.value)
+                    $.ajax({
+                        type: "POST",
+                        url: `${BASE_URL}/admin/pemesanan/konfirmasi-penyetuju`,
+                        data: {
+                            'status_penyetuju' : result.value[0],
+                            'alasan_penyetuju' : result.value[1],
+                            'penyetuju' : $(this).data('penyetuju'),
+                            'penyetuju_id' : $(this).data('penyetujuid'),
+                            'uuid' : $(this).data('uuid')
+                        },
+                        dataType: "json",
+                        success: function (response, textStatus, jqXHR) {
+                            // console.log(response, textStatus, jqXHR)
+                            if(response.code == 200){
+                                callSwal({
+                                    type : 'success',
+                                    title : response?.message,
+                                    text : 'Berhasil',
+                                    url : response?.url,
+                                    timer : false //fill false / number of seconds
+                                })
+                            }
+                            else{
+                                validatorMessageJs(response?.text_validator)
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown){
+                            if(jqXHR.responseJSON.code == 400){
+                                validatorMessageJs({ message: jqXHR?.responseJSON?.text_validator})
+                            }
+                            else{
+                                return swalTerjadiKesalahanServer()
+                            }
+                        }
+                    });
+                }
+            })
+        });
+
+        $(document).on('click', '.btn-ubah-status', function(){
+            $.ajax({
+                type: "POST",
+                url: `${BASE_URL}/admin/pemesanan/ubah-status-jalan`,
+                data: {
+                    uuid : $(this).data('uuid')
+                },
+                dataType: "json",
+                success: function (response) {
+                    if(response.code == 200){
+                        callSwal({
+                            type : 'success',
+                            title : response?.message,
+                            text : 'Berhasil',
+                            url : response?.url,
+                            timer : false //fill false / number of seconds
+                        })
+                    }
+                    else{
+                        validatorMessageJs(response?.text_validator)
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown){
+                    if(jqXHR.responseJSON.code == 400){
+                        validatorMessageJs({ message: jqXHR?.responseJSON?.text_validator})
+                    }
+                    else{
+                        return swalTerjadiKesalahanServer()
+                    }
+                }
+            });
         })
     </script>
 @endpush

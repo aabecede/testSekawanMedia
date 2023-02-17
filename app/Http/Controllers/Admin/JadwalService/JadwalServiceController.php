@@ -38,6 +38,7 @@ class JadwalServiceController extends Controller
      */
     public function create()
     {
+        $this->middleware('isAdmin');
         $base_url = $this->base_url;
         $kendaraan = MasterKendaraan::all();
         return view('admin.jadwal-service.create', compact(
@@ -54,7 +55,8 @@ class JadwalServiceController extends Controller
      */
     public function store(StoreJadwalServiceRequest $request)
     {
-    DB::beginTransaction();
+        $this->middleware('isAdmin');
+        DB::beginTransaction();
         try {
 
             $bukti_struk = null;
@@ -109,6 +111,7 @@ class JadwalServiceController extends Controller
      */
     public function edit(String $jadwalService)
     {
+        $this->middleware('isAdmin');
         $data = JadwalService::whereUuid($jadwalService)->first();
         $base_url = $this->base_url;
         $kendaraan = MasterKendaraan::all();
@@ -128,6 +131,7 @@ class JadwalServiceController extends Controller
      */
     public function update(UpdateJadwalServiceRequest $request, String $jadwalService)
     {
+        $this->middleware('isAdmin');
         DB::beginTransaction();
         $model = JadwalService::whereUuid($jadwalService)->first();
         try {
@@ -177,6 +181,7 @@ class JadwalServiceController extends Controller
      */
     public function destroy(String $jadwalService)
     {
+        $this->middleware('isAdmin');
         try {
             DB::beginTransaction();
             $model = JadwalService::whereUuid($jadwalService)->first();
